@@ -3,8 +3,9 @@ import numpy as np
 import soundfile as sf
 from PyQt5.QtWidgets import QFileDialog
 
+
 def play_pause_track(self, track_index):
-    track = self.tracks[track_index]
+    track = self.tracks[track_index] 
     if track["data"] is None:
         return
 
@@ -41,6 +42,7 @@ def play_pause_track(self, track_index):
         )
         track["stream"].start()
 
+
 def play_pause_all(self):
     any_playing = any(track.get("playing", False) for track in self.tracks)
     if any_playing:
@@ -54,22 +56,40 @@ def play_pause_all(self):
         for i in range(len(self.tracks)):
             play_pause_track(self, i)
 
+
 def update_volume(self, track_index, value):
     self.tracks[track_index]["volume"] = value / 100.0
+
 
 def export_all(self):
     file_path, _ = QFileDialog.getSaveFileName(self, "Сохранить как", "", "WAV files (*.wav)")
     if not file_path:
         return
 
+    max_length = max(len(track["data"]) for track in self.tracks if track["data"] is not None)
+
     mixed = None
+    sample_rate = None
+
     for track in self.tracks:
         if track["data"] is not None:
+            if sample_rate is None:
+                sample_rate = track["sample_rate"]
+
+            data = track["data"] * track["volume"]
+            if len(data) < max_length:
+
+                if data.ndim == 1:
+                    data = np.pad(data, (0, max_length - len(data)), 'constant')
+                else:
+                    data = np.pad(data, ((0, max_length - len(data)), (0, 0)), 'constant')
+
             if mixed is None:
-                mixed = np.copy(track["data"]) * track["volume"]
+                mixed = data
             else:
-                mixed += track["data"] * track["volume"]
+                mixed += data
 
     if mixed is not None:
-        mixed = mixed / np.max(np.abs(mixed))  # нормализация
-        sf.write(file_path, mixed, self.tracks[0]["sample_rate"])
+
+        mixed = mixed / np.max(np.abs(mixed))
+        sf.write(file_path, mixed, sample_rate)

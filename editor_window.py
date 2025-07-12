@@ -54,7 +54,6 @@ class AudioEditor(QMainWindow):
 
         left_panel.addWidget(self._divider())
 
-        # --- Track 2 Controls ---
         left_panel.addWidget(QLabel("🎚 Дорожка 2"))
         for label, func in [
             ("Загрузить", lambda: t2.load_audio(self, 1)),
@@ -74,14 +73,13 @@ class AudioEditor(QMainWindow):
 
         left_panel.addWidget(self._divider())
 
-        # --- Global Controls ---
         left_panel.addWidget(QLabel("🎛 Общие"))
         for label, func in [
-            ("▶️ Воспроизвести все", lambda: mc.play_pause_all(self)),
-            ("⬆️ Экспорт", lambda: mc.export_all(self)),
-            ("↩️ Undo", lambda: print("Undo")),
-            ("↪️ Redo", lambda: print("Redo")),
-            ("⚙️ Настройки", lambda: print("Настройки")),
+            ("Воспроизвести все", lambda: mc.play_pause_all(self)),
+            ("Экспорт", lambda: mc.export_all(self)),
+            ("Undo", lambda: print("Undo")),
+            ("Redo", lambda: print("Redo")),
+            ("Настройки", lambda: print("Настройки")),
             ("🎛 Эффекты", lambda: print("Эффекты")),
             ("🎵 Метроном", lambda: print("Метроном")),
         ]:
@@ -95,7 +93,6 @@ class AudioEditor(QMainWindow):
         left_container.setFixedWidth(220)
         left_container.setStyleSheet("background-color: #1c1c1c; color: white;")
 
-        # --- Waveform Display ---
         plot_layout = QVBoxLayout()
         for i in range(2):
             fig, ax = plt.subplots()
